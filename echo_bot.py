@@ -21,6 +21,13 @@ def text_up(message):
         itembtn3 = types.KeyboardButton('Пополнение баланса')
         markup.add(itembtn1, itembtn2, itembtn3)
         bot.send_message(message.chat.id, "Choose one letter:", reply_markup=markup)
+    elif message.text == "Y":
+        markup = types.InlineKeyboardMarkup(row_width=1)
+        itembtm1 = types.InlineKeyboardButton('Правила', callback_data='inc_1')
+        itembtm2 = types.InlineKeyboardButton('Пользовательское соглашение', callback_data='inc_2')
+        itembtm3 = types.InlineKeyboardButton('Пополнение баланса', callback_data='inc_3')
+        markup.add(itembtm1, itembtm2, itembtm3)
+        bot.send_message(message.chat.id, "Choose one letter:", reply_markup=markup)
     elif message.text == "Правила":
         bot.send_message(message.chat.id, "Мы тут не в игры играем, никаких правил")
     elif message.text == "Пользовательское соглашение":
@@ -30,13 +37,24 @@ def text_up(message):
     else:
         bot.reply_to(message, message.text)
         bot.send_message(message.chat.id, "You lose")
+
+@bot.callback_query_handler(func=lambda call: True)
+def test_callback(call):
+    if call.message:
+        if call.data == "inc_1":
+            bot.send_message(call.message.chat.id, "Мы тут не в игры играем, никаких правил")
+        if call.data == "inc_2":
+            bot.send_message(call.message.chat.id, "Можем просто заблокировать, если ты нам не понравишься")
+        if call.data == "inc_3":
+            bot.send_message(call.message.chat.id, "$9000000000000")
+
     
 @bot.message_handler(content_types=['sticker'])
 def text_down(message):
     bot.send_message(message.chat.id, "You win")
 
-bot.infinity_polling()
 
+bot.infinity_polling()
 
 '''
 @bot.message_handler(func=lambda m: True)

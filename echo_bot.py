@@ -20,14 +20,16 @@ def text_up(message):
         itembtn2 = types.KeyboardButton('Пользовательское соглашение')
         itembtn3 = types.KeyboardButton('Пополнение баланса')
         markup.add(itembtn1, itembtn2, itembtn3)
-        bot.send_message(message.chat.id, "Choose one letter:", reply_markup=markup)
+        bot.send_message(message.chat.id, "Menu:", reply_markup=markup)
     elif message.text == "Y":
+        markup = types.ReplyKeyboardRemove(selective=False)
+        bot.send_message(message.chat.id, "Ага", reply_markup=markup)
         markup = types.InlineKeyboardMarkup(row_width=1)
         itembtm1 = types.InlineKeyboardButton('Правила', callback_data='inc_1')
         itembtm2 = types.InlineKeyboardButton('Пользовательское соглашение', callback_data='inc_2')
         itembtm3 = types.InlineKeyboardButton('Пополнение баланса', callback_data='inc_3')
         markup.add(itembtm1, itembtm2, itembtm3)
-        bot.send_message(message.chat.id, "Choose one letter:", reply_markup=markup)
+        bot.send_message(message.chat.id, "Меню:", reply_markup=markup)
     elif message.text == "Правила":
         bot.send_message(message.chat.id, "Мы тут не в игры играем, никаких правил")
     elif message.text == "Пользовательское соглашение":
@@ -42,9 +44,14 @@ def text_up(message):
 def test_callback(call):
     if call.message:
         if call.data == "inc_1":
-            bot.send_message(call.message.chat.id, "Мы тут не в игры играем, никаких правил")
+            bot.edit_message_text("Мы тут не в игры играем, никаких правил", call.message.chat.id, call.message.message_id)
+            markup = types.InlineKeyboardMarkup(row_width=1)
+            item1 = types.InlineKeyboardButton('Ага', callback_data='la_1')
+            item2 = types.InlineKeyboardButton('Отправить отзыв', callback_data='la_2')
+            markup.add(item1, item2)
+            bot.send_message(call.message.chat.id, "X)", reply_markup=markup)
         if call.data == "inc_2":
-            bot.send_message(call.message.chat.id, "Можем просто заблокировать, если ты нам не понравишься")
+            bot.edit_message_text("Можем просто заблокировать, если ты нам не понравишься", call.message.chat.id, call.message.message_id)
         if call.data == "inc_3":
             bot.send_message(call.message.chat.id, "$9000000000000")
 

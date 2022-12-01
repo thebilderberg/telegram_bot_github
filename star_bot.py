@@ -6,18 +6,47 @@ import sqlite3
 
 sqll = [0]
 
-bot = telebot.TeleBot("1774678528:AAGJO1yuK9SyDxDfJSbujLcnTxmGhXaGyyI", parse_mode=None)
+bot = telebot.TeleBot("TOKEN", parse_mode=None)
 
 conn = sqlite3.connect('SQLdb.db', check_same_thread=False)
 cursor = conn.cursor()
 
-def sql3db (id: int, user_name: str, user_login: str, balans: int):
+def updateUserBalance (id: int, balans: int):
+    cursor.execute('UPDATE users SET balans=? WHERE id=?', (balans, id))
+    conn.commit()
+
+def createUser (id: int, user_name: str, user_login: str, balans: int):
     cursor.execute('INSERT INTO users (id, user_name, user_login, balans) VALUES (?, ?, ?, ?)', (id, user_name, user_login, balans))
     conn.commit()
 
-def infoSQL (moneyy: int):
-    cursor.execute('INSERT INTO info (moneyy) VALUES (?)', (moneyy,))
+def getUserBalans (id: int):
+    balans = cursor.execute('SELECT balans FROM users WHERE id = ?', (id,))
     conn.commit()
+    return balans.fetchone()[0]
+
+def selectAll_id ():
+    all_id = cursor.execute('SELECT id FROM users')
+    conn.commit()
+    return all_id.fetchall()
+
+def idINFOMRER (ID):        # вытаскиваем список ID-шников из картежа sqlite
+    allin = selectAll_id()
+    print(allin)
+    num = 0   
+    # usId = call.from_user.id
+    print(ID, 'user')
+    new_base = []
+    for el in allin:
+        print(num)
+        print(ID, allin[num][0])
+        new_base.insert(num, allin[num][0])
+        num = num+1
+        print(new_base)
+        print('==========================================')
+    return new_base
+
+
+    
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
@@ -45,44 +74,92 @@ def test_callback(call):
             itembtm4 = types.InlineKeyboardButton('Личный кабинет', callback_data='inc_4')
             markup.add(itembtm1, itembtm2, itembtm3, itembtm4)
             bot.edit_message_text("Меню:", call.message.chat.id, call.message.message_id, reply_markup=markup)
+
+
         elif call.data == "inc_1":
+            user_ID = call.from_user.id
+            if user_ID in idINFOMRER(user_ID):
+                print('Hello friend')
+            else:
+                us_id = call.from_user.id
+                us_name = call.from_user.first_name
+                us_sname = call.from_user.username
+                createUser(id=us_id, user_name=us_name, user_login=us_sname, balans=0)
+                print('Привет! Ваше имя добавленно в базу данных!') 
+                # bot.send_message(call.from_user.id, 'Привет! Ваше имя добавленно в базу данных!')            
+
             markup = types.InlineKeyboardMarkup(row_width=1)
             item1 = types.InlineKeyboardButton('Отправить отзыв', callback_data='la_2')
             item2 = types.InlineKeyboardButton('Назад', callback_data='inc_0')
             markup.add(item1, item2)
             bot.edit_message_text("Мы тут не в игры играем, никаких правил", call.message.chat.id, call.message.message_id, reply_markup=markup)
-        elif call.data == "inc_2":
-            bot.send_message(call.from_user.id, 'Привет! Ваше имя добавленно в базу данных!')
-            us_id = call.from_user.id
-            us_name = call.from_user.first_name
-            us_sname = call.from_user.username
-            username = call.from_user.last_name
 
-            sql3db(id=us_id, user_name=us_name, user_login=us_sname, balans=username)
+        elif call.data == "inc_2":
+            user_ID = call.from_user.id
+            if user_ID in idINFOMRER(user_ID):
+                print('Hello friend')
+            else:
+                us_id = call.from_user.id
+                us_name = call.from_user.first_name
+                us_sname = call.from_user.username
+                createUser(id=us_id, user_name=us_name, user_login=us_sname, balans=0)
+                print('Привет! Ваше имя добавленно в базу данных!')
+                # bot.send_message(call.from_user.id, 'Привет! Ваше имя добавленно в базу данных!') 
             markup = types.InlineKeyboardMarkup(row_width=1)
             item_for_block_1 = types.InlineKeyboardButton('Инверсировать игру', callback_data='item_block_2')
             item_for_block_2 = types.InlineKeyboardButton('Назад', callback_data='inc_0')
             markup.add(item_for_block_1, item_for_block_2)
             bot.edit_message_text("Можем просто заблокировать, если ты нам не понравишься", call.message.chat.id, call.message.message_id, reply_markup=markup)
+
         elif call.data == "inc_3":
-            sqll[0] = sqll[0]+100
-            infoSQL(moneyy=sqll[0])
+            user_ID = call.from_user.id
+            if user_ID in idINFOMRER(user_ID):
+
+                print('Hello friend')
+            else:
+                us_id = call.from_user.id
+                us_name = call.from_user.first_name
+                us_sname = call.from_user.username
+                createUser(id=us_id, user_name=us_name, user_login=us_sname, balans=0)
+                # bot.send_message(call.from_user.id, 'Привет! Ваше имя добавленно в базу данных!')
+                print('Привет! Ваше имя добавленно в базу данных!') 
+
+            us_id = call.from_user.id
+            us_name = call.from_user.first_name
+            us_sname = call.from_user.username
+            currentUserBalance = getUserBalans(us_id)
+            # print(currentUserBalance.fetchone()[0])
+            currentUserBalance = currentUserBalance+100
+            updateUserBalance(id=us_id, balans=currentUserBalance)
             markup = types.InlineKeyboardMarkup(row_width=1)
             balansbtn = types.InlineKeyboardButton('Назад', callback_data='inc_0')
             markup.add(balansbtn)
             bot.edit_message_text("Баланс пополнен!", call.message.chat.id, call.message.message_id, reply_markup=markup)
 
         elif call.data == "inc_4":
+            user_ID = call.from_user.id
+            if user_ID in idINFOMRER(user_ID):
+                print('Hello friend')
+            else:
+                us_id = call.from_user.id
+                us_name = call.from_user.first_name
+                us_sname = call.from_user.username
+                createUser(id=us_id, user_name=us_name, user_login=us_sname, balans=0)
+                print('Привет! Ваше имя добавленно в базу данных!') 
+                # bot.send_message(call.from_user.id, 'Привет! Ваше имя добавленно в базу данных!') 
+
             markup = types.InlineKeyboardMarkup(row_width=1)
             lkbtn1 = types.InlineKeyboardButton('Назад', callback_data='inc_0')
             markup.add(lkbtn1)
-            bot.edit_message_text('Баланс:'+str(sqll[0]), call.message.chat.id, call.message.message_id, reply_markup=markup)
+            us_id = call.from_user.id
+            bot.edit_message_text('Баланс:'+str(getUserBalans(us_id)), call.message.chat.id, call.message.message_id, reply_markup=markup)
 
         elif call.data == "la_2":
             markup = types.InlineKeyboardMarkup(row_width=1)
             otzyv = types.InlineKeyboardButton('Назад', callback_data='inc_0')
             markup.add(otzyv)
             bot.edit_message_text("info@xcloudclub.com", call.message.chat.id, call.message.message_id, reply_markup=markup)
+
         elif call.data == 'item_block_2':
             markup = types.InlineKeyboardMarkup(row_width=1)
             inv_1 = types.InlineKeyboardButton('Назад', callback_data='inc_0')
@@ -101,11 +178,3 @@ def text_down(message):
 
 """--------------------------------- Start ------------------------------------------------------------------"""
 bot.infinity_polling()
-
-
-'''
-@bot.message_handler(func=lambda m: True)
-def answer(message):
-    bot.reply_to(message, message.text)
-    bot.send_message(message.chat.id, "You lose")      
-'''

@@ -6,7 +6,7 @@ import sqlite3
 
 sqll = [0]
 
-bot = telebot.TeleBot("1774678528:AAGJO1yuK9SyDxDfJSbujLcnTxmGhXaGyyI", parse_mode=None)
+bot = telebot.TeleBot("TOKEN", parse_mode=None)
 
 conn = sqlite3.connect('SQLdb.db', check_same_thread=False)
 cursor = conn.cursor()

@@ -44,7 +44,7 @@ def idINFOMRER (ID):        # вытаскиваем список ID-шнико�
     for el in allin:
         print(num)
         print(ID, allin[num][0])
-        new_base.insert(num, allin[num][0])
+        new_base.insert(num, allin[num][0]) #такой способ вытащить ID из кортежа
         num = num+1
         print(new_base)
         print('==========================================')
